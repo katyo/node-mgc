@@ -1,27 +1,24 @@
-var mgc = require('./build/default/mgc');
-
-function isStr(data){
-  return typeof data == 'string';
+function AddOn(alts, prefix, suffix){
+  for(var i = 0; i < alts.length; i++){
+    try{
+      return require((prefix || '') + alts[i] + (suffix || ''));
+    }catch(e){}
+  }
+  throw new Error('Unable to load addon');
 }
 
-function isFunc(data){
-  return typeof data == 'function';
-}
+var mgc = AddOn(['Release', 'Debug', 'default'], './build/', '/mgc');
 
 function AStr2Bits(args, num, opts){
-  var arg = args[num], pre, opt, bit;
-  if(isStr(arg)){
+  var arg = args[num], pre, opt;
+  if(typeof arg == 'string'){
     args[num] = 0;
     do{
       pre = arg;
       for(opt in opts){
         arg = arg.split(opt);
         if(arg.length > 1){
-          bit = opts[opt];
-          if(isFunc(bit)){
-            bit = bit(args);
-          }
-          args[num] |= bit;
+          args[num] |= opts[opt];
         }
         arg = arg.join('');
       }

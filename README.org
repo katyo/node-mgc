@@ -5,21 +5,31 @@
   Unlike to https://github.com/mscdex/mmmagic it:
 
   + Uses native installed libmagic
-  + Support node buffers and streams only
+  + Support strings, node buffers and streams only
   + Operate absolutely thread-safe (although libmagic isn't thread-safe)
 
 * TODO Usage
-
   : var MGC = require('mgc'); /* require module */
-  :
-  : var mgc = new MGC('mime'); /* create new instance with flag 'mime' */
+  : var mgc = new MGC(flags); /* create new instance with flags (optional) */
   : mgc.load(function(err){ /* load default .mgc databases */
   :   if(err) throw err;
-  :   mgc.data(buf_or_str, function(err, desc){ /* gets description of buffer's data */
-  :     if(err) throw err;
-  :     console.log(desc);
-  :   });
+  :   /* now mgc is ready for use */
   : });
+
+** Using with buffers and strings
+   : mgc.data(buf_or_str, function(err, desc){ /* gets description of data */
+   :   if(err) throw err;
+   :   console.log(desc);
+   : });
+
+** Using with streams
+   : var FS = require('fs');
+   : var stm = FS.createReadStream('path/to/file');
+   : mgc.wrap(stm);
+   : stm.on('magic', function(err, desc){ /* gets description of data */
+   :   if(err) throw err;
+   :   console.log(desc);
+   : });
 
 * TODO Flags
   

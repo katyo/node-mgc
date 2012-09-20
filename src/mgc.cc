@@ -35,6 +35,7 @@ namespace node{
       }
       void
       exec(){
+        magic->run = true;
         uv_queue_work(uv_default_loop(), &req, Run, End);
       }
     protected:
@@ -61,6 +62,9 @@ namespace node{
     private:
       void
       fin(){
+        magic->run = false;
+        magic->deque();
+        
         HandleScope scope;
         const char* error = magic_error(magic->cookie);
         if(error){
@@ -250,38 +254,38 @@ namespace node{
       Local<String> name = String::NewSymbol("MGC");
       
       tpl->SetClassName(name);
-      tpl->InstanceTemplate()->SetInternalFieldCount(1);
+      //tpl->InstanceTemplate()->SetInternalFieldCount(1);
       
-      DEFINE_CONST(tpl, MAGIC_, NONE);               /* No flags */
-      DEFINE_CONST(tpl, MAGIC_, DEBUG);              /* Turn on debugging */
-      //DEFINE_CONST(tpl, MAGIC_, SYMLINK);            /* Follow symlinks */
-      //DEFINE_CONST(tpl, MAGIC_, COMPRESS);           /* Check inside compressed files */
-      //DEFINE_CONST(tpl, MAGIC_, DEVICES);            /* Look at the contents of devices */
-      DEFINE_CONST(tpl, MAGIC_, MIME_TYPE);          /* Return the MIME type */
-      DEFINE_CONST(tpl, MAGIC_, CONTINUE);           /* Return all matches */
-      //DEFINE_CONST(tpl, MAGIC_, CHECK);              /* Print warnings to stderr */
-      //DEFINE_CONST(tpl, MAGIC_, PRESERVE_ATIME);     /* Restore access time on exit */
-      DEFINE_CONST(tpl, MAGIC_, RAW);                /* Don't translate unprintable chars */
-      DEFINE_CONST(tpl, MAGIC_, ERROR);              /* Handle ENOENT etc as real errors */
-      DEFINE_CONST(tpl, MAGIC_, MIME_ENCODING);      /* Return the MIME encoding */
-      DEFINE_CONST(tpl, MAGIC_, MIME);              
-      //DEFINE_CONST(tpl, MAGIC_, APPLE);              /* Return the Apple creator and type */
-      DEFINE_CONST(tpl, MAGIC_, NO_CHECK_COMPRESS);  /* Don't check for compressed files */
-      DEFINE_CONST(tpl, MAGIC_, NO_CHECK_TAR);       /* Don't check for tar files */
-      DEFINE_CONST(tpl, MAGIC_, NO_CHECK_SOFT);      /* Don't check magic entries */
-      DEFINE_CONST(tpl, MAGIC_, NO_CHECK_APPTYPE);   /* Don't check application type */
-      DEFINE_CONST(tpl, MAGIC_, NO_CHECK_ELF);       /* Don't check for elf details */
-      DEFINE_CONST(tpl, MAGIC_, NO_CHECK_TEXT);      /* Don't check for text files */
-      DEFINE_CONST(tpl, MAGIC_, NO_CHECK_CDF);       /* Don't check for cdf files */
-      DEFINE_CONST(tpl, MAGIC_, NO_CHECK_TOKENS);    /* Don't check tokens */
-      DEFINE_CONST(tpl, MAGIC_, NO_CHECK_ENCODING);  /* Don't check text encodings */
+      DEFINE_CONST(target, MAGIC_, NONE);               /* No flags */
+      DEFINE_CONST(target, MAGIC_, DEBUG);              /* Turn on debugging */
+      //DEFINE_CONST(target, MAGIC_, SYMLINK);            /* Follow symlinks */
+      //DEFINE_CONST(target, MAGIC_, COMPRESS);           /* Check inside compressed files */
+      //DEFINE_CONST(target, MAGIC_, DEVICES);            /* Look at the contents of devices */
+      DEFINE_CONST(target, MAGIC_, MIME_TYPE);          /* Return the MIME type */
+      DEFINE_CONST(target, MAGIC_, CONTINUE);           /* Return all matches */
+      //DEFINE_CONST(target, MAGIC_, CHECK);              /* Print warnings to stderr */
+      //DEFINE_CONST(target, MAGIC_, PRESERVE_ATIME);     /* Restore access time on exit */
+      DEFINE_CONST(target, MAGIC_, RAW);                /* Don't translate unprintable chars */
+      DEFINE_CONST(target, MAGIC_, ERROR);              /* Handle ENOENT etc as real errors */
+      DEFINE_CONST(target, MAGIC_, MIME_ENCODING);      /* Return the MIME encoding */
+      DEFINE_CONST(target, MAGIC_, MIME);
+      //DEFINE_CONST(target, MAGIC_, APPLE);              /* Return the Apple creator and type */
+      DEFINE_CONST(target, MAGIC_, NO_CHECK_COMPRESS);  /* Don't check for compressed files */
+      DEFINE_CONST(target, MAGIC_, NO_CHECK_TAR);       /* Don't check for tar files */
+      DEFINE_CONST(target, MAGIC_, NO_CHECK_SOFT);      /* Don't check magic entries */
+      DEFINE_CONST(target, MAGIC_, NO_CHECK_APPTYPE);   /* Don't check application type */
+      DEFINE_CONST(target, MAGIC_, NO_CHECK_ELF);       /* Don't check for elf details */
+      DEFINE_CONST(target, MAGIC_, NO_CHECK_TEXT);      /* Don't check for text files */
+      DEFINE_CONST(target, MAGIC_, NO_CHECK_CDF);       /* Don't check for cdf files */
+      DEFINE_CONST(target, MAGIC_, NO_CHECK_TOKENS);    /* Don't check tokens */
+      DEFINE_CONST(target, MAGIC_, NO_CHECK_ENCODING);  /* Don't check text encodings */
       
       /* Defined for backwards compatibility (renamed) */
-      DEFINE_CONST(tpl, MAGIC_, NO_CHECK_ASCII);
+      DEFINE_CONST(target, MAGIC_, NO_CHECK_ASCII);
       
       /* Defined for backwards compatibility; do nothing */
-      DEFINE_CONST(tpl, MAGIC_, NO_CHECK_FORTRAN);   /* Don't check ascii/fortran */
-      DEFINE_CONST(tpl, MAGIC_, NO_CHECK_TROFF);     /* Don't check ascii/troff */
+      DEFINE_CONST(target, MAGIC_, NO_CHECK_FORTRAN);   /* Don't check ascii/fortran */
+      DEFINE_CONST(target, MAGIC_, NO_CHECK_TROFF);     /* Don't check ascii/troff */
       
       NODE_SET_PROTOTYPE_METHOD(tpl, "load", LoadAsync);
       NODE_SET_PROTOTYPE_METHOD(tpl, "buffer", BufferAsync);

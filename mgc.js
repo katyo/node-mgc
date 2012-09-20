@@ -42,11 +42,10 @@ var flags_opts = {
   a: mgc.CONTINUE,
   e: mgc.ERROR,
   /* separators */
-  ' ': 0,
   '+': 0,
-  '/': 0,
   '|': 0,
-  '-': 0
+  ',': 0,
+  ':': 0
 };
 
 function MGC(flags){

@@ -1,5 +1,6 @@
 #include "mgc.hh"
 
+#include <string>
 #include <queue>
 
 extern "C" {
@@ -172,14 +173,13 @@ namespace node{
     private:
       Persistent<Object> data; /* buffer or string argument */
       String::Utf8Value *str; /* raw string data for string argument */
-      const char* raw; /* raw data */
+      const void* raw; /* raw data */
       unsigned len; /* data length in bytes */
-      const char* result; /* result */
+      string result; /* result */
     public:
       DataBaton(Magic *magic_,
                 Handle<Object> data_,
                 Handle<Function> cb_): Baton(magic_, cb_) {
-        result = NULL;
         data = Persistent<Object>::New(data_);
         if(data->IsString()){
           str = new String::Utf8Value(data_);
@@ -201,16 +201,14 @@ namespace node{
     protected:
       void
       run(){
-        result = magic_buffer(magic->cookie,
-                              raw,
-                              len);
+        result = magic_buffer(magic->cookie, raw, len);
       }
       void
       end(){
         const unsigned argc = 2;
         Local<Value> argv[argc] = {
           Local<Value>::New(Null()),
-          Local<Value>::New(String::New(result))
+          Local<Value>::New(String::New(result.data()))
         };
         ret(argc, argv);
       }

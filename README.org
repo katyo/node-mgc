@@ -3,18 +3,33 @@
   This addon adds to node functionality of libmagic and `file` util.
 
   Unlike to https://github.com/mscdex/mmmagic it:
+
   + Uses native installed libmagic
   + Support node buffers and streams only
   + Operate absolutely thread-safe (although libmagic isn't thread-safe)
 
 * TODO Usage
 
-  : var MGC = require('mgc');
-  : var mgc = new MGC('m'); /* create new instance with flag 'mime' */
+  : var MGC = require('mgc'); /* require module */
+  :
+  : var mgc = new MGC('mime'); /* create new instance with flag 'mime' */
   : mgc.load(function(err){ /* load default .mgc databases */
-  :   mgc.buffer(buf, function(err, desc){ /* gets description of buffer's data */
-  :     
+  :   if(err) throw err;
+  :   mgc.data(buf_or_str, function(err, desc){ /* gets description of buffer's data */
+  :     if(err) throw err;
+  :     console.log(desc);
   :   });
   : });
 
-  …
+* TODO Flags
+  
+  Flags is a string of names, like this:
+  
+  + *debug, d* — turn on debugging
+  + *type, t* — return the MIME type
+  + *enc, c* — return the MIME encoding
+  + *mime, m* — return the MIME type and encoding (same as t+c)
+  + *all, a* — return all matches
+  + *error, e* — handle ENOENT etc as real errors
+
+  Flags may be combined in any order and separated by +|,:

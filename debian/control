@@ -1,0 +1,14 @@
+Source: node-mgc
+Section: misc
+Priority: extra
+Maintainer: Kayo Phoenix <kayo@illumium.org>
+Build-Depends: debhelper (>= 7.0.50~), nodejs-dev, node-gyp, libmagic-dev
+Standards-Version: 3.8.4
+Homepage: http://github.com/katyo/node-mgc
+
+Package: node-mgc
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: NodeJS mime magic detection addon
+ It can be used to classify files
+ according to magic number tests.

@@ -1,0 +1,16 @@
+{
+  "name": "mgc",
+  "description": "NodeJS mime magic detection addon",
+  "version": "0.0.1",
+  "author": "Kayo Phoenix <kayo@illumium.org>",
+  "repository": { "type": "git", "url": "git://github.com/katyo/node-mgc.git" },
+  "keywords": ["mime", "magic", "libmagic", "mgc", "detect", "classify"],
+  "dependencies": {
+    "bufferjs": "*"
+  },
+  "devDependencies": {
+    "node-gyp": "*",
+    "should": "*"
+  },
+  "main": "./mgc"
+}

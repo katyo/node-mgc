@@ -1,0 +1,20 @@
+* TODO Overview
+
+  This addon adds to node functionality of libmagic and `file` util.
+
+  Unlike to https://github.com/mscdex/mmmagic it:
+  + Uses native installed libmagic
+  + Support node buffers and streams only
+  + Operate absolutely thread-safe (although libmagic isn't thread-safe)
+
+* TODO Usage
+
+  : var MGC = require('mgc');
+  : var mgc = new MGC('m'); /* create new instance with flag 'mime' */
+  : mgc.load(function(err){ /* load default .mgc databases */
+  :   mgc.buffer(buf, function(err, desc){ /* gets description of buffer's data */
+  :     
+  :   });
+  : });
+
+  …

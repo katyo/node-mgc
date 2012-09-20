@@ -41,7 +41,7 @@ namespace node{
     protected:
       void
       ret(unsigned argc, Handle<Value> argv[]){
-        if(cb->IsFunction()){
+        if(!cb.IsEmpty()){
           TryCatch try_catch;
           cb->Call(Context::GetCurrent()->Global(), argc, argv);
           if(try_catch.HasCaught()){
@@ -137,9 +137,9 @@ namespace node{
     protected:
       void
       run(){
-        String::Utf8Value str(filename);
         const char* filename_ = NULL;
-        if(filename->IsString()){
+        if(!filename.IsEmpty()){
+          String::Utf8Value str(filename);
           filename_ = *str;
         }
         magic_load(magic->cookie, filename_);

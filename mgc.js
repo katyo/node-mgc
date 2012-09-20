@@ -60,10 +60,10 @@ function MGC(flags){
   return mgc.MGC.apply(this, arguments);
 }
 
-mgc.MGC.prototype.attach = function(stream){
+mgc.MGC.prototype.wrap = function(stream){
   var self = this;
   return stream.once('data', function(buf){
-    self.buffer(buf, function(err, res){
+    self.data(buf, function(err, res){
       stream.emit('magic', err, res);
     });
   });

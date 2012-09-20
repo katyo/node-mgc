@@ -164,6 +164,7 @@ namespace node{
       return THROW(TypeError, "Bad arguments");
     }
     
+  protected:
     class BufferBaton: public Baton {
     private:
       Persistent<Object> buffer;
@@ -197,6 +198,7 @@ namespace node{
       }
     };
     
+  public:
     static Handle<Value> BufferAsync(const Arguments& args) {
       HandleScope scope;
       Magic* magic = ObjectWrap::Unwrap<Magic>(args.This());
@@ -218,6 +220,7 @@ namespace node{
       return Undefined();
     }
     
+  public:
     static Handle<Value> New(const Arguments& args){
       HandleScope scope;
 
@@ -239,13 +242,12 @@ namespace node{
       return args.This();
     }
     
-    static Persistent<FunctionTemplate> tpl;
+    static const Persistent<FunctionTemplate> tpl;
     
     static void
     Initialize(const Handle<Object> target){
       HandleScope scope;
       Local<String> name = String::NewSymbol("MGC");
-      tpl = Persistent<FunctionTemplate>::New(FunctionTemplate::New(New));
       
       tpl->SetClassName(name);
       tpl->InstanceTemplate()->SetInternalFieldCount(1);
@@ -287,7 +289,9 @@ namespace node{
       target->Set(name, tpl->GetFunction());
     }
   };
-
+  
+  const Persistent<FunctionTemplate> Magic::tpl = Persistent<FunctionTemplate>::New(FunctionTemplate::New(New));
+  
   extern "C" {
     void init(Handle<Object> target){
       HandleScope scope;

@@ -25,7 +25,7 @@ override_dh_auto_build:
 
 override_dh_install:
 	dh_install
-	echo 'misc:Depends=nodejs (= $(node_version))' > debian/node-mmmagic.substvars
+	echo 'misc:Depends=nodejs (= $(node_version))' > debian/node-mgc.substvars
 
 override_dh_auto_clean:
 	node-gyp clean

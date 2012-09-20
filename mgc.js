@@ -9,10 +9,11 @@ function isFunc(data){
 }
 
 function AStr2Bits(args, num, opts){
-  var arg = args[num], opt, bit;
+  var arg = args[num], pre, opt, bit;
   if(isStr(arg)){
     args[num] = 0;
-    for(; arg; ){
+    do{
+      pre = arg;
       for(opt in opts){
         arg = arg.split(opt);
         if(arg.length > 1){
@@ -24,11 +25,11 @@ function AStr2Bits(args, num, opts){
         }
         arg = arg.join('');
       }
-    }
+    }while(pre != arg);
   }
 }
 
-var flags = {
+var flags_opts = {
   /* long */
   debug: mgc.DEBUG,
   type: mgc.MIME_TYPE,
@@ -37,12 +38,12 @@ var flags = {
   all: mgc.CONTINUE,
   error: mgc.ERROR,
   /* short */
-  'd': mgc.DEBUG,
-  't': mgc.MIME_TYPE,
-  'c': mgc.MIME_ENCODING,
-  'm': mgc.MIME,
-  'a': mgc.CONTINUE,
-  'e': mgc.ERROR,
+  d: mgc.DEBUG,
+  t: mgc.MIME_TYPE,
+  c: mgc.MIME_ENCODING,
+  m: mgc.MIME,
+  a: mgc.CONTINUE,
+  e: mgc.ERROR,
   /* separators */
   ' ': 0,
   '+': 0,
@@ -55,7 +56,7 @@ function MGC(flags){
   if(!(this instanceof arguments.callee)){
     return new MGC(flags);
   }
-  AStr2Bits(arguments, 0, flags);
+  AStr2Bits(arguments, 0, flags_opts);
   return mgc.MGC.apply(this, arguments);
 }
 

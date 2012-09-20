@@ -121,28 +121,27 @@ namespace node{
   protected:
     class LoadBaton: public Baton {
     private:
-      Persistent<String> filename;
+      String::Utf8Value *filename;
     public:
       LoadBaton(Magic *magic_,
-                Handle<String> filename_,
+                Handle<Value> filename_,
                 Handle<Function> cb_): Baton(magic_, cb_) {
         if(filename_->IsString()){
-          filename = Persistent<String>::New(filename_);
+          filename = new String::Utf8Value(filename_);
+        }else{
+          filename = NULL;
         }
       }
       virtual
       ~LoadBaton(){
-        filename.Dispose();
+        if(filename){
+          delete filename;
+        }
       }
     protected:
       void
       run(){
-        const char* filename_ = NULL;
-        if(!filename.IsEmpty()){
-          String::Utf8Value str(filename);
-          filename_ = *str;
-        }
-        magic_load(magic->cookie, filename_);
+        magic_load(magic->cookie, filename ? **filename : NULL);
       }
     };
   public:
@@ -161,7 +160,7 @@ namespace node{
         return Undefined();
       }else if(args.Length() == 1 && args[0]->IsFunction()){
         magic->toque(new LoadBaton(magic,
-                                   Handle<String>::Cast(Undefined()),
+                                   Undefined(),
                                    Handle<Function>::Cast(args[0])));
         return Undefined();
       }
@@ -169,27 +168,42 @@ namespace node{
     }
     
   protected:
-    class BufferBaton: public Baton {
+    class DataBaton: public Baton {
     private:
-      Persistent<Object> buffer;
-      const char* result;
+      Persistent<Object> data; /* buffer or string argument */
+      String::Utf8Value *str; /* raw string data for string argument */
+      const char* raw; /* raw data */
+      unsigned len; /* data length in bytes */
+      const char* result; /* result */
     public:
-      BufferBaton(Magic *magic_,
-                  Handle<Object> buffer_,
-                  Handle<Function> cb_): Baton(magic_, cb_){
+      DataBaton(Magic *magic_,
+                Handle<Object> data_,
+                Handle<Function> cb_): Baton(magic_, cb_) {
         result = NULL;
-        buffer = Persistent<Object>::New(buffer_);
+        data = Persistent<Object>::New(data_);
+        if(data->IsString()){
+          str = new String::Utf8Value(data_);
+          raw = **str;
+          len = str->length();
+        }else{
+          str = NULL;
+          raw = Buffer::Data(data);
+          len = Buffer::Length(data);
+        }
       }
       virtual
-      ~BufferBaton(){
-        buffer.Dispose();
+      ~DataBaton(){
+        if(str){
+          delete str;
+        }
+        data.Dispose();
       }
     protected:
       void
       run(){
         result = magic_buffer(magic->cookie,
-                              Buffer::Data(buffer),
-                              Buffer::Length(buffer));
+                              raw,
+                              len);
       }
       void
       end(){
@@ -203,23 +217,23 @@ namespace node{
     };
     
   public:
-    static Handle<Value> BufferAsync(const Arguments& args) {
+    static Handle<Value> DataAsync(const Arguments& args) {
       HandleScope scope;
       Magic* magic = ObjectWrap::Unwrap<Magic>(args.This());
       
       if(args.Length() < 2){
         return THROW(TypeError, "Two arguments required");
       }
-      if(!Buffer::HasInstance(args[0])){
-        return THROW(TypeError, "Buffer as first argument required");
+      if(!args[0]->IsString() && !Buffer::HasInstance(args[0])){
+        return THROW(TypeError, "Buffer or String as first argument required");
       }
       if(!args[1]->IsFunction()){
         return THROW(TypeError, "Callback function as second argument required");
       }
       
-      magic->toque(new BufferBaton(magic,
-                                   Handle<Object>::Cast(args[0]),
-                                   Handle<Function>::Cast(args[1])));
+      magic->toque(new DataBaton(magic,
+                                 Handle<Object>::Cast(args[0]),
+                                 Handle<Function>::Cast(args[1])));
       
       return Undefined();
     }
@@ -286,7 +300,7 @@ namespace node{
       DEFINE_CONST(target, MAGIC_, NO_CHECK_TROFF);     /* Don't check ascii/troff */
       
       NODE_SET_PROTOTYPE_METHOD(tpl, "load", LoadAsync);
-      NODE_SET_PROTOTYPE_METHOD(tpl, "buffer", BufferAsync);
+      NODE_SET_PROTOTYPE_METHOD(tpl, "data", DataAsync);
       
       target->Set(name, tpl->GetFunction());
     }

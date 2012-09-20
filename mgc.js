@@ -1,4 +1,4 @@
-var mgc = require('./build/Release/mgc');
+var mgc = require('./build/default/mgc');
 
 function isStr(data){
   return typeof data == 'string';
@@ -59,5 +59,14 @@ function MGC(flags){
   AStr2Bits(arguments, 0, flags_opts);
   return mgc.MGC.apply(this, arguments);
 }
+
+mgc.MGC.prototype.attach = function(stream){
+  var self = this;
+  return stream.once('data', function(buf){
+    self.buffer(buf, function(err, res){
+      stream.emit('magic', err, res);
+    });
+  });
+};
 
 module.exports = MGC;

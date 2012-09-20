@@ -227,23 +227,21 @@ namespace node{
   public:
     static Handle<Value> New(const Arguments& args){
       HandleScope scope;
-
-      if(!args.IsConstructCall()){
-        return args.Callee()->NewInstance();
-      }
-      
+      Local<Object> self = args.IsConstructCall() ? args.This() : args.Callee()->NewInstance();
       int flags = MAGIC_NONE;
       
-      if(args.Length() == 1 && args[1]->IsInt32()){
-        flags = args[1]->Int32Value();
-      }else{
-        return THROW(TypeError, "Argument must be an integer");
+      if(args.Length()){
+        if(args.Length() == 1 && args[0]->IsInt32()){
+          flags = args[0]->Int32Value();
+        }else{
+          return THROW(TypeError, "Argument must be an integer");
+        }
       }
       
       Magic* obj = new Magic(flags);
-      obj->Wrap(args.This());
+      obj->Wrap(self);
       
-      return args.This();
+      return self;
     }
     
     static const Persistent<FunctionTemplate> tpl;
@@ -254,7 +252,7 @@ namespace node{
       Local<String> name = String::NewSymbol("MGC");
       
       tpl->SetClassName(name);
-      //tpl->InstanceTemplate()->SetInternalFieldCount(1);
+      tpl->InstanceTemplate()->SetInternalFieldCount(1);
       
       DEFINE_CONST(target, MAGIC_, NONE);               /* No flags */
       DEFINE_CONST(target, MAGIC_, DEBUG);              /* Turn on debugging */

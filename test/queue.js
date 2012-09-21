@@ -5,26 +5,15 @@ MGC = require('../mgc'),
 FS = require('fs');
 
 var mgc = new MGC('t'),
-bench = new Bench(),
-count = 0;
+bench = new Bench();
 
-function end(){
-  if(!--count){
-    console.log({
-      mu: process.memoryUsage(),
-      st: bench.stat(3)
-    });
-  }
-}
-
-function test(path, mime){
-  ++count;
+function test(path, mime, next){
   FS.createReadStream(path).once('data', function(buf){
     var seed = bench.beg();
     mgc.data(buf, function(err, res){
       bench.end(seed);
       res.should.be.equal(mime);
-      end();
+      next();
     });
   });
 }
@@ -32,7 +21,20 @@ function test(path, mime){
 mgc.load(function(err){
   if (err) throw err;
 
-  for(var path in dataset){
-    test(path, dataset[path]);
+  var keys = Object.keys(dataset),
+  i = 0;
+
+  function next(){
+    if(i < keys.length){
+      var path = keys[i++];
+      test(path, dataset[path], next);
+    }else{
+      console.log({
+        mu: process.memoryUsage(),
+        st: bench.stat(3)
+      });
+    }
   }
+
+  next();
 });

@@ -44,15 +44,22 @@
     :   console.log(desc);
     : });
 
-* TODO Flags
-  
-  Flags is a string of names, like this:
-  
-  + *debug, d* — turn on debugging
-  + *type, t* — return the MIME type
-  + *enc, c* — return the MIME encoding
-  + *mime, m* — return the MIME type and encoding (same as t+c)
-  + *all, a* — return all matches
-  + *error, e* — handle ENOENT etc as real errors
+* TODO Specs
 
-  Flags may be combined in any order and separated by +|,:
+** Flags
+   
+   Flags is a string of names, like this:
+   
+   + *debug, d* — turn on debugging
+   + *type, t* — return the MIME type
+   + *enc, c* — return the MIME encoding
+   + *mime, m* — return the MIME type and encoding (same as t+c)
+   + *all, a* — return all matches
+   + *error, e* — handle ENOENT etc as real errors
+
+   Flags may be combined in any order and separated by +|,:
+
+** Wrap
+
+   You can pass a minimal (for detecting) content length in bytes as second argument to *wrap* call.
+   By default it equals to 16 Kbytes.

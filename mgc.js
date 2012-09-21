@@ -1,3 +1,5 @@
+require('bufferjs');
+
 function AddOn(alts, prefix, suffix){
   for(var i = 0; i < alts.length; i++){
     try{
@@ -56,13 +58,28 @@ function MGC(flags){
   return mgc.MGC.apply(this, arguments);
 }
 
-mgc.MGC.prototype.wrap = function(stream){
-  var self = this;
-  return stream.once('data', function(buf){
-    self.data(buf, function(err, res){
-      stream.emit('magic', err, res);
+var minlen_ = 16 * 1024;
+
+mgc.MGC.prototype.wrap = function(stream, minlen){
+  var self = this, data;
+  minlen = minlen || minlen_;
+  function end(){
+    self.data(data, function(err, res){
+      stream.emit('magic', err, res, data);
     });
-  });
+  }
+  return stream
+    .on('end', end)
+    .on('data', function beg(buf){
+      data = data ?
+        Buffer.concat(data, buf) /* collect data */
+        : buf; /* initialize data */
+      if(data.length >= minlen){ /* detect */
+        stream.removeListener('data', beg);
+        stream.removeListener('end', end);
+        end();
+      }
+    });
 };
 
 module.exports = MGC;
